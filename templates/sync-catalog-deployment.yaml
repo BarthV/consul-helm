@@ -46,7 +46,7 @@ spec:
             - "-ec"
             - |
               consul-k8s sync-catalog \
-                -http-addr=${HOST_IP}:8500 \
+                -http-addr={{ .Values.syncCatalog.consulApiAddr }} \
                 -k8s-default-sync={{ .Values.syncCatalog.default }} \
                 {{- if (not .Values.syncCatalog.toConsul) }}
                 -to-consul=false \
@@ -55,6 +55,9 @@ spec:
                 -to-k8s=false \
                 {{- end }}
                 -consul-domain={{ .Values.global.domain }} \
+                {{- if .Values.syncCatalog.consulToken }}
+                -token="{{ .Values.syncCatalog.consulToken}}" \
+                {{- end }}
                 {{- if .Values.syncCatalog.k8sPrefix }}
                 -k8s-service-prefix="{{ .Values.syncCatalog.k8sPrefix}}" \
                 {{- end }}

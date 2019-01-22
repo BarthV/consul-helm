@@ -168,6 +168,13 @@ syncCatalog:
   toConsul: true
   toK8S: true
 
+  # consulApiAddr is the Consul API endpoint (using host:port format)
+  consulApiAddr: "${HOST_IP}:8500"
+
+  # consulToken will be used for authenticating consul requests when
+  # registering Kubernetes services. (Kubernetes -> Consul sync)
+  consulToken: null
+
   # k8sPrefix is the service prefix to prepend to services before registering
   # with Kubernetes. For example "consul-" will register all services
   # prepended with "consul-". (Consul -> Kubernetes sync)
