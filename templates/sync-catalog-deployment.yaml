@@ -28,6 +28,7 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "false"
     spec:
+      hostNetwork: true
       serviceAccountName: {{ template "consul.fullname" . }}-sync-catalog
       containers:
         - name: consul-sync-catalog
