@@ -69,7 +69,9 @@ spec:
                 {{- if .Values.syncCatalog.nodePortSyncType }}
                 -node-port-sync-type={{ .Values.syncCatalog.nodePortSyncType }} \
                 {{- end }}
-                {{- if .Values.syncCatalog.k8sTag }}
+                {{- if .Values.hostedOn }}
+                -consul-k8s-tag=k8s-{{ .Values.hostedOn }}
+                {{- else if .Values.syncCatalog.k8sTag }}
                 -consul-k8s-tag={{ .Values.syncCatalog.k8sTag }}
                 {{- end }}
 {{- end }}

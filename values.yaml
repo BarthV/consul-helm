@@ -4,6 +4,8 @@
 # be disabled if you plan on connecting to a Consul cluster external to
 # the Kube cluster.
 
+hostedOn: null
+
 global:
   # enabled is the master enabled switch. Setting this to true or false
   # will enable or disable all the components within this chart by default.
