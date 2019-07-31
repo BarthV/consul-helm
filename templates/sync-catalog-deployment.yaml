@@ -12,6 +12,8 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   replicas: 1
+  strategy:
+    type: {{ .Values.syncCatalog.deploymentStrategy }}
   selector:
     matchLabels:
       app: {{ template "consul.name" . }}
@@ -28,6 +30,9 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "false"
     spec:
+      {{- if .Values.syncCatalog.hostNetwork }}
+      hostNetwork: {{ .Values.syncCatalog.hostNetwork }}
+      {{- end }}
       serviceAccountName: {{ template "consul.fullname" . }}-sync-catalog
       containers:
         - name: consul-sync-catalog
@@ -55,12 +60,16 @@ spec:
                   name: "{{ .Release.Name }}-consul-catalog-sync-acl-token"
                   key: "token"
             {{- end}}
+            {{- if .Values.syncCatalog.aclClearToken }}
+            - name: CONSUL_HTTP_TOKEN
+              value: {{ .Values.syncCatalog.aclClearToken }}
+            {{- end }}
           command:
             - "/bin/sh"
             - "-ec"
             - |
               consul-k8s sync-catalog \
-                -http-addr=${HOST_IP}:8500 \
+                -http-addr={{ .Values.syncCatalog.consulApiAddr }} \
                 -k8s-default-sync={{ .Values.syncCatalog.default }} \
                 {{- if (not .Values.syncCatalog.toConsul) }}
                 -to-consul=false \
@@ -79,7 +88,9 @@ spec:
                 {{- if .Values.syncCatalog.nodePortSyncType }}
                 -node-port-sync-type={{ .Values.syncCatalog.nodePortSyncType }} \
                 {{- end }}
-                {{- if .Values.syncCatalog.k8sTag }}
+                {{- if .Values.syncCatalog.k8sTagSuffix }}
+                -consul-k8s-tag=k8s-{{ .Values.syncCatalog.k8sTagSuffix }}
+                {{- else if .Values.syncCatalog.k8sTag }}
                 -consul-k8s-tag={{ .Values.syncCatalog.k8sTag }} \
                 {{- end }}
                 {{- if .Values.syncCatalog.consulPrefix}}
